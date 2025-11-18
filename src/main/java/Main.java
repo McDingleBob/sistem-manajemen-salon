@@ -10,6 +10,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+// Import controllers
+import controller.*;
+
 /**
  * Main application class untuk Sistem Manajemen Salon
  *
@@ -24,9 +27,37 @@ public class Main extends Application {
     private BorderPane mainLayout;
     private Label statusLabel;
 
+    // Controllers
+    private ServiceController serviceController;
+    private EmployeeController employeeController;
+    private CustomerController customerController;
+    private AppointmentController appointmentController;
+    private TransactionController transactionController;
+    private ReportController reportController;
+
     @Override
     public void start(Stage primaryStage) {
         try {
+            // Initialize controllers
+            serviceController = new ServiceController();
+            employeeController = new EmployeeController();
+            customerController = new CustomerController();
+            appointmentController = new AppointmentController(
+                customerController.getCustomerList(),
+                serviceController.getServiceList(),
+                employeeController.getEmployeeList()
+            );
+            transactionController = new TransactionController(
+                customerController.getCustomerList(),
+                serviceController.getServiceList(),
+                employeeController.getEmployeeList()
+            );
+            reportController = new ReportController(
+                transactionController.getTransactionList(),
+                serviceController.getServiceList(),
+                employeeController.getEmployeeList()
+            );
+
             // Create main layout
             mainLayout = new BorderPane();
 
@@ -309,59 +340,72 @@ public class Main extends Application {
     }
 
     private void showServiceList() {
-        showPlaceholder("Daftar Pelayanan", "Modul Daftar Pelayanan akan ditampilkan di sini");
+        mainLayout.setCenter(serviceController.createServiceListView());
+        updateStatus("Daftar Pelayanan");
     }
 
     private void showServiceAdd() {
-        showPlaceholder("Tambah Pelayanan", "Form Tambah Pelayanan akan ditampilkan di sini");
+        mainLayout.setCenter(serviceController.createServiceAddForm(() -> showServiceList()));
+        updateStatus("Tambah Pelayanan");
     }
 
     private void showEmployeeList() {
-        showPlaceholder("Daftar Karyawan", "Modul Daftar Karyawan akan ditampilkan di sini");
+        mainLayout.setCenter(employeeController.createEmployeeListView());
+        updateStatus("Daftar Karyawan");
     }
 
     private void showEmployeeAdd() {
-        showPlaceholder("Tambah Karyawan", "Form Tambah Karyawan akan ditampilkan di sini");
+        mainLayout.setCenter(employeeController.createEmployeeAddForm(() -> showEmployeeList()));
+        updateStatus("Tambah Karyawan");
     }
 
     private void showCustomerList() {
-        showPlaceholder("Daftar Pelanggan", "Modul Daftar Pelanggan akan ditampilkan di sini");
+        mainLayout.setCenter(customerController.createCustomerListView());
+        updateStatus("Daftar Pelanggan");
     }
 
     private void showCustomerAdd() {
-        showPlaceholder("Tambah Pelanggan", "Form Tambah Pelanggan akan ditampilkan di sini");
+        mainLayout.setCenter(customerController.createCustomerAddForm(() -> showCustomerList()));
+        updateStatus("Tambah Pelanggan");
     }
 
     private void showAppointmentList() {
-        showPlaceholder("Daftar Appointment", "Modul Daftar Appointment akan ditampilkan di sini");
+        mainLayout.setCenter(appointmentController.createAppointmentListView());
+        updateStatus("Daftar Appointment");
     }
 
     private void showAppointmentAdd() {
-        showPlaceholder("Buat Appointment", "Form Buat Appointment akan ditampilkan di sini");
+        mainLayout.setCenter(appointmentController.createAppointmentAddForm(() -> showAppointmentList()));
+        updateStatus("Buat Appointment");
     }
 
     private void showAppointmentCalendar() {
-        showPlaceholder("Kalender Appointment", "Kalender Appointment akan ditampilkan di sini");
+        showPlaceholder("Kalender Appointment", "Kalender Appointment akan ditampilkan di sini (Coming Soon)");
     }
 
     private void showTransactionNew() {
-        showPlaceholder("Transaksi Baru", "Form Transaksi Baru akan ditampilkan di sini");
+        mainLayout.setCenter(transactionController.createTransactionView());
+        updateStatus("Transaksi Baru");
     }
 
     private void showTransactionHistory() {
-        showPlaceholder("Riwayat Transaksi", "Riwayat Transaksi akan ditampilkan di sini");
+        mainLayout.setCenter(transactionController.createTransactionHistoryView());
+        updateStatus("Riwayat Transaksi");
     }
 
     private void showReportSales() {
-        showPlaceholder("Laporan Penjualan", "Laporan Penjualan akan ditampilkan di sini");
+        mainLayout.setCenter(reportController.createSalesReportView());
+        updateStatus("Laporan Penjualan");
     }
 
     private void showReportRevenue() {
-        showPlaceholder("Laporan Pendapatan", "Laporan Pendapatan akan ditampilkan di sini");
+        mainLayout.setCenter(reportController.createRevenueReportView());
+        updateStatus("Laporan Pendapatan");
     }
 
     private void showReportEmployee() {
-        showPlaceholder("Laporan Kinerja Karyawan", "Laporan Kinerja Karyawan akan ditampilkan di sini");
+        mainLayout.setCenter(reportController.createEmployeeReportView());
+        updateStatus("Laporan Kinerja Karyawan");
     }
 
     private void showManual() {
